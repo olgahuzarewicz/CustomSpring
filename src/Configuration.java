@@ -5,19 +5,19 @@ import java.lang.annotation.Target;
 
 public class Configuration {
 
+    @Bean(name = "name1")
+    public Service method1() {
+        return new ServiceImpl();
+    }
+
+    @Bean(name = "name2")
+    public Service method2() {
+        return new ServiceImpl();
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface Bean{
+    public @interface Bean {
         String name() default "";
-    }
-
-    @Bean(name="mojaNazwa")
-    public Service cosTamCosTam() {
-        return new ServiceImpl();
-    }
-
-    @Bean(name="mojaInnaNazwa")
-    public Service inneCosTamCosTam() {
-        return new ServiceImpl();
     }
 }

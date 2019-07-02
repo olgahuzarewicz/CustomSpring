@@ -21,8 +21,8 @@ class ApplicationContext {
         for (Method method : methods) {
             System.out.println("Current method name: " + method.getName());
 
-            Method methodcall = cls.getDeclaredMethod(method.getName(),
-                    new Class[]{});
+            Method methodcall = cls.getDeclaredMethod(method.getName()
+            );
 
             Annotation[] annotations = methodcall.getDeclaredAnnotations();
 
@@ -40,7 +40,6 @@ class ApplicationContext {
 
             }
         }
-
         return null;
     }
 }
