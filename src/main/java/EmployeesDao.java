@@ -1,6 +1,5 @@
 import employee.Employee;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import service.TransactionCallback;
 
 import java.util.Date;
@@ -8,12 +7,11 @@ import java.util.List;
 
 public class EmployeesDao {
 
-    public static void main() throws Exception {
+    public static void main() {
 
         EmployeesDao empDao = new EmployeesDao();
 
         Employee emp = new Employee();
-        emp.setEmpId(5L);
         emp.setName("Babu");
         emp.setDepartament("Security");
         emp.setJoinedOn(new Date());
@@ -44,61 +42,37 @@ public class EmployeesDao {
     }
 
     public List<Employee> getEmployeeList() {
-        TransactionCallback<List<Employee>> transaction = new TransactionCallback<>() {
-
-            @Override
-            public List<Employee> execute(Session session) {
-                System.out.println("Get Employee List is here:");
-                String queryStr = "select emp from Employee emp";
-                Query query = session.createQuery(queryStr);
-                List<Employee> empList = query.list();
-                return empList;
-            }
-        };
-
-        return TransactionTemplate.runInTransaction(transaction);
+        return TransactionTemplate.runInTransaction((TransactionCallback<Object>) session -> {
+            System.out.println("Get Employee List is here:");
+            String queryStr = "select emp from Employee emp";
+            Query query = session.createQuery(queryStr);
+            List<Employee> empList = query.list();
+            return empList;
+        });
     }
 
     public Employee getEmployeeById(Long empId) {
-        TransactionCallback<Employee> transaction = new TransactionCallback<>() {
-
-            @Override
-            public Employee execute(Session session) {
-                System.out.println("Get By ID is here:");
-                Employee emp = session.get(Employee.class, empId);
-                System.out.println(emp);
-                return emp;
-            }
-        };
-
-        return TransactionTemplate.runInTransaction(transaction);
+        return TransactionTemplate.runInTransaction((TransactionCallback<Object>) session -> {
+            System.out.println("Get By ID is here:");
+            Employee emp = session.get(Employee.class, empId);
+            System.out.println(emp);
+            return emp;
+        });
     }
 
     public void insertEmployee(Employee emp) {
-        TransactionCallback<Employee> transaction = new TransactionCallback<>() {
-
-            @Override
-            public Employee execute(Session session) {
-                System.out.println("Inserting is here:");
-                session.save(emp);
-                return null;
-            }
-        };
-
-        TransactionTemplate.runInTransaction(transaction);
+        TransactionTemplate.runInTransaction((TransactionCallback<Object>) session -> {
+            System.out.println("Inserting is here:");
+            session.save(emp);
+            return null;
+        });
     }
 
     public void deleteEmployee(Employee emp) {
-        TransactionCallback transaction = new TransactionCallback() {
-
-            @Override
-            public Employee execute(Session session) {
-                System.out.println("Deleting is here:");
-                session.delete(emp);
-                return null;
-            }
-        };
-
-        TransactionTemplate.runInTransaction(transaction);
+        TransactionTemplate.runInTransaction(session -> {
+            System.out.println("Deleting is here:");
+            session.delete(emp);
+            return null;
+        });
     }
 }
