@@ -1,18 +1,19 @@
 import employee.Employee;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
+import service.TransactionCallback;
 
 import java.util.Date;
 import java.util.List;
 
 public class EmployeesDao {
 
-    public static void main() {
+    public static void main() throws Exception {
 
         EmployeesDao empDao = new EmployeesDao();
 
         Employee emp = new Employee();
+        emp.setEmpId(5L);
         emp.setName("Babu");
         emp.setDepartament("Security");
         emp.setJoinedOn(new Date());
@@ -43,88 +44,61 @@ public class EmployeesDao {
     }
 
     public List<Employee> getEmployeeList() {
+        TransactionCallback<List<Employee>> transaction = new TransactionCallback<>() {
 
-        Session session = null;
-        List<Employee> empList = null;
-        try {
-            session = HibernateUtil.getSession();
-            String queryStr = "select emp from Employee emp";
-            Query query = session.createQuery(queryStr);
-            empList = query.list();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // handle exception here
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception ex) {
+            @Override
+            public List<Employee> execute(Session session) {
+                System.out.println("Get Employee List is here:");
+                String queryStr = "select emp from Employee emp";
+                Query query = session.createQuery(queryStr);
+                List<Employee> empList = query.list();
+                return empList;
             }
-        }
-        return empList;
+        };
+
+        return TransactionTemplate.runInTransaction(transaction);
     }
 
     public Employee getEmployeeById(Long empId) {
+        TransactionCallback<Employee> transaction = new TransactionCallback<>() {
 
-        Session session = null;
-        Employee emp = null;
-        try {
-            session = HibernateUtil.getSession();
-            String queryStr = "select emp from employee.Employee emp";
-            emp = session.get(Employee.class, empId);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // handle exception here
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception ex) {
+            @Override
+            public Employee execute(Session session) {
+                System.out.println("Get By ID is here:");
+                Employee emp = session.get(Employee.class, empId);
+                System.out.println(emp);
+                return emp;
             }
-        }
-        return emp;
+        };
+
+        return TransactionTemplate.runInTransaction(transaction);
     }
 
     public void insertEmployee(Employee emp) {
+        TransactionCallback<Employee> transaction = new TransactionCallback<>() {
 
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSession();
-            transaction = session.beginTransaction();
-            session.save(emp);
-            System.out.println("inserted employee: " + emp.getName());
-            transaction.commit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // handle exception here
-            if (transaction != null) transaction.rollback();
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception ex) {
+            @Override
+            public Employee execute(Session session) {
+                System.out.println("Inserting is here:");
+                session.save(emp);
+                return null;
             }
-        }
+        };
+
+        TransactionTemplate.runInTransaction(transaction);
     }
 
     public void deleteEmployee(Employee emp) {
+        TransactionCallback transaction = new TransactionCallback() {
 
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSession();
-            transaction = session.beginTransaction();
-            session.delete(emp);
-            transaction.commit();
-            System.out.println("deleted employee: " + emp.getName());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // handle exception here
-            if (transaction != null) transaction.rollback();
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception ex) {
+            @Override
+            public Employee execute(Session session) {
+                System.out.println("Deleting is here:");
+                session.delete(emp);
+                return null;
             }
-        }
+        };
+
+        TransactionTemplate.runInTransaction(transaction);
     }
 }
