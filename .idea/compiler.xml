@@ -20,7 +20,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="CustomSpring" target="1.5" />
+      <module name="CustomSpring" target="12" />
     </bytecodeTargetLevel>
   </component>
 </project>
