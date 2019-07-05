@@ -1,9 +1,7 @@
 package service;
 
-import org.hibernate.Session;
-
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
 
 public interface TransactionCallback<T> {
-    T execute(Session session) throws SQLException;
+    T execute(EntityManager em);
 }

@@ -1,33 +1,23 @@
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import service.TransactionCallback;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 public class TransactionTemplate {
 
     public static <T> T runInTransaction(TransactionCallback transactionCallback) {
 
-        Session session = null;
-        Transaction transaction = null;
-        T employee = null;
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("customspring");
+        EntityManager em = emf.createEntityManager();
 
-        try {
-            session = HibernateUtil.getSession();
-            transaction = session.beginTransaction();
-            employee = (T) transactionCallback.execute(session);
+        em.getTransaction().begin();
+        T employee = (T) transactionCallback.execute(em);
+        System.out.println("Committing transaction");
+        em.getTransaction().commit();
 
-            System.out.println("Committing transaction");
-            transaction.commit();
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // handle exception here
-            if (transaction != null) transaction.rollback();
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception ex) {
-            }
-        }
+        em.close();
         return employee;
     }
 }

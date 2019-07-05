@@ -1,7 +1,6 @@
 import employee.Employee;
-import org.hibernate.Query;
-import service.TransactionCallback;
 
+import javax.persistence.Query;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class EmployeesDao {
         System.out.println(empObj);
 
         System.out.println("---------------------------");
-        empDao.deleteEmployee(empObj);
+        empDao.deleteEmployee(emp.getEmpId());
 
         System.out.println("---------------------------");
 
@@ -42,36 +41,41 @@ public class EmployeesDao {
     }
 
     public List<Employee> getEmployeeList() {
-        return TransactionTemplate.runInTransaction((TransactionCallback<Object>) session -> {
+        return TransactionTemplate.runInTransaction(em -> {
             System.out.println("Get Employee List is here:");
             String queryStr = "select emp from Employee emp";
-            Query query = session.createQuery(queryStr);
-            List<Employee> empList = query.list();
+            Query query = em.createQuery(queryStr);
+            List<Employee> empList = query.getResultList();
             return empList;
         });
     }
 
     public Employee getEmployeeById(Long empId) {
-        return TransactionTemplate.runInTransaction((TransactionCallback<Object>) session -> {
+        return TransactionTemplate.runInTransaction(em -> {
             System.out.println("Get By ID is here:");
-            Employee emp = session.get(Employee.class, empId);
+            Employee emp = em.find(Employee.class, empId);
             System.out.println(emp);
             return emp;
         });
     }
 
     public void insertEmployee(Employee emp) {
-        TransactionTemplate.runInTransaction((TransactionCallback<Object>) session -> {
+        TransactionTemplate.runInTransaction(em -> {
             System.out.println("Inserting is here:");
-            session.save(emp);
+            System.out.println(emp);
+            em.persist(emp);
             return null;
         });
     }
 
-    public void deleteEmployee(Employee emp) {
-        TransactionTemplate.runInTransaction(session -> {
-            System.out.println("Deleting is here:");
-            session.delete(emp);
+    public void deleteEmployee(Long empId) {
+        TransactionTemplate.runInTransaction(em -> {
+            System.out.println("Deleting:");
+            Employee emp = em.find(Employee.class, empId);
+            System.out.println(emp);
+            if (em.contains(emp)) {
+                em.remove(emp);
+            }
             return null;
         });
     }
