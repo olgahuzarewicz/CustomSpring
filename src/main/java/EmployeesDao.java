@@ -1,82 +1,39 @@
 import employee.Employee;
 
-import javax.persistence.Query;
-import java.util.Date;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
-public class EmployeesDao {
+public class EmployeesDao implements EmployeesDaoInterface {
 
-    public static void main() {
-
-        EmployeesDao empDao = new EmployeesDao();
-
-        Employee emp = new Employee();
-        emp.setName("Babu");
-        emp.setDepartament("Security");
-        emp.setJoinedOn(new Date());
-        emp.setSalary(5250L);
-        empDao.insertEmployee(emp);
-
-        System.out.println("---------------------------");
-
-        List<Employee> empList = empDao.getEmployeeList();
-        System.out.println("emp size: " + empList.size());
-        empList.stream().forEach(System.out::println);
-
-        System.out.println("---------------------------");
-
-        Employee empObj = empDao.getEmployeeById(emp.getEmpId());
-        System.out.println(empObj);
-
-        System.out.println("---------------------------");
-        empDao.deleteEmployee(emp.getEmpId());
-
-        System.out.println("---------------------------");
-
-        empList = empDao.getEmployeeList();
-        System.out.println("emp size: " + empList.size());
-        empList.stream().forEach(System.out::println);
-
-        System.out.println("---------------------------");
+    @Override
+    public void originalMethod(String s) {
+        System.out.println("inside DAO: local storage thread: " + Thread.currentThread().getName() + " value: " + ThreadLocalEntityManager.getThreadLocalValue());
+        System.out.println(s);
     }
 
+    @Override
     public List<Employee> getEmployeeList() {
-        return TransactionTemplate.runInTransaction(em -> {
-            System.out.println("Get Employee List is here:");
-            String queryStr = "select emp from Employee emp";
-            Query query = em.createQuery(queryStr);
-            List<Employee> empList = query.getResultList();
-            return empList;
-        });
+        String queryStr = "select emp from Employee emp";
+        System.out.println("inside DAO: local storage thread: " + Thread.currentThread().getName() + " value: " + ThreadLocalEntityManager.getThreadLocalValue());
+        TypedQuery<Employee> query = ThreadLocalEntityManager.getThreadLocalValue().createQuery(queryStr, Employee.class);
+        return query.getResultList();
     }
 
+    @Override
     public Employee getEmployeeById(Long empId) {
-        return TransactionTemplate.runInTransaction(em -> {
-            System.out.println("Get By ID is here:");
-            Employee emp = em.find(Employee.class, empId);
-            System.out.println(emp);
-            return emp;
-        });
+        return ThreadLocalEntityManager.getThreadLocalValue().find(Employee.class, empId);
     }
 
+    @Override
     public void insertEmployee(Employee emp) {
-        TransactionTemplate.runInTransaction(em -> {
-            System.out.println("Inserting is here:");
-            System.out.println(emp);
-            em.persist(emp);
-            return null;
-        });
+        ThreadLocalEntityManager.getThreadLocalValue().persist(emp);
     }
 
+    @Override
     public void deleteEmployee(Long empId) {
-        TransactionTemplate.runInTransaction(em -> {
-            System.out.println("Deleting:");
-            Employee emp = em.find(Employee.class, empId);
-            System.out.println(emp);
-            if (em.contains(emp)) {
-                em.remove(emp);
-            }
-            return null;
-        });
+        Employee emp = ThreadLocalEntityManager.getThreadLocalValue().find(Employee.class, empId);
+        if (ThreadLocalEntityManager.getThreadLocalValue().contains(emp)) {
+            ThreadLocalEntityManager.getThreadLocalValue().remove(emp);
+        }
     }
 }
