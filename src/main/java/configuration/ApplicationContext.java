@@ -1,12 +1,14 @@
+package configuration;
+
 import annotation.Bean;
-import configuration.Configuration;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 
-class ApplicationContext {
+public class ApplicationContext {
 
     private Configuration config;
 
@@ -40,6 +42,7 @@ class ApplicationContext {
 
                 if (annotation.name().equals(name)) {
                     R bean = (R) methodcall.invoke(config);
+
                     beans.put(name, bean);
 
                     Class beanCls = bean.getClass();
@@ -61,6 +64,25 @@ class ApplicationContext {
                         }
                     }
 
+                    for (Method beanMethod : beanCls.getDeclaredMethods()) {
+
+                        Annotation[] beanMethodDeclaredAnnotations = beanMethod.getDeclaredAnnotations();
+
+                        for (Annotation an : beanMethodDeclaredAnnotations) {
+
+                            if (an.annotationType().getName().equals("annotation.Transactional")) {
+                                Handler handler = new Handler(bean);
+
+                                Class[] interfaces = beanCls.getInterfaces();
+                                for (Class iface : interfaces) {
+                                    Object f = Proxy.newProxyInstance(beanCls.getClassLoader(),
+                                            new Class[]{iface},
+                                            handler);
+                                    return (R) f;
+                                }
+                            }
+                        }
+                    }
                     return bean;
                 }
             }

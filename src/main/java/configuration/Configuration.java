@@ -1,27 +1,41 @@
 package configuration;
 
 import annotation.Bean;
-import dao.CompanyDAO;
-import dao.CompanyDAOImpl;
-import dao2.CompanyDAO2;
-import dao2.CompanyDAOImpl2;
-import service.Service;
-import service.ServiceImpl;
+import companyDao.CompanyDao;
+import companyDao.CompanyDaoImpl;
+import companyDao2.CompanyDao2;
+import companyDao2.CompanyDaoImpl2;
+import employee.repository.EmployeeDao;
+import employee.repository.EmployeeDaoImpl;
+import serviceDao.ServiceDao;
+import serviceDao.ServiceDaoImpl;
+
+import javax.persistence.EntityManager;
 
 public class Configuration {
 
-    @Bean(name = "service")
-    public Service service() {
-        return new ServiceImpl();
+    @Bean(name = "serviceDao")
+    public ServiceDao serviceDao() {
+        return new ServiceDaoImpl();
     }
 
-    @Bean(name = "companyDAO")
-    public CompanyDAO companyDAO() {
-        return new CompanyDAOImpl();
+    @Bean(name = "companyDao")
+    public CompanyDao companyDAO() {
+        return new CompanyDaoImpl();
     }
 
-    @Bean(name = "companyDAO2")
-    public CompanyDAO2 companyDAO2() {
-        return new CompanyDAOImpl2();
+    @Bean(name = "companyDao2")
+    public CompanyDao2 companyDAO2() {
+        return new CompanyDaoImpl2();
+    }
+
+    @Bean(name = "employeesDao")
+    public EmployeeDao employeesDao() {
+        return new EmployeeDaoImpl();
+    }
+
+    @Bean(name = "entityManager")
+    public EntityManager entityManager() {
+        return new EntityManagerProxy();
     }
 }

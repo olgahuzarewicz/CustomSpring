@@ -1,7 +1,8 @@
+import configuration.ApplicationContext;
 import configuration.Configuration;
-import employee.Employee;
+import employee.entity.Employee;
+import employee.repository.EmployeeDao;
 
-import java.lang.reflect.Proxy;
 import java.util.Date;
 import java.util.List;
 
@@ -9,16 +10,12 @@ public class Main {
 
     public static void main(String[] args) throws Throwable {
         ApplicationContext context = new ApplicationContext(Configuration.class);
-        //Object bean1 = context.getBean("companyDAO");
-        // Object bean = getBean(context);
+//        CompanyDao2 bean = context.getBean("companyDao2");
+//        bean.test();
 
-        EmployeesDaoInterface employeesDao = new EmployeesDao();
-        Handler handler = new Handler(employeesDao);
-        EmployeesDaoInterface f = (EmployeesDaoInterface) Proxy.newProxyInstance(EmployeesDaoInterface.class.getClassLoader(),
-                new Class[]{EmployeesDaoInterface.class},
-                handler);
+        EmployeeDao bean1 = context.getBean("employeesDao");
 
-        List<Employee> empList = f.getEmployeeList();
+        List<Employee> empList = bean1.getEmployeeList();
         System.out.println("emp size: " + empList.size());
         empList.stream().forEach(System.out::println);
 
@@ -27,32 +24,30 @@ public class Main {
         emp.setDepartament("Security");
         emp.setJoinedOn(new Date());
         emp.setSalary(5250L);
-        f.insertEmployee(emp);
+        bean1.insertEmployee(emp);
 
         System.out.println("---------------------------");
 
-        empList = f.getEmployeeList();
+        empList = bean1.getEmployeeList();
         System.out.println("emp size: " + empList.size());
         empList.stream().forEach(System.out::println);
 
         System.out.println("---------------------------");
 
-        Employee empObj = f.getEmployeeById(emp.getEmpId());
+        Employee empObj = bean1.getEmployeeById(emp.getEmpId());
         System.out.println(empObj);
 
         System.out.println("---------------------------");
-        f.deleteEmployee(emp.getEmpId());
+        bean1.deleteEmployee(emp.getEmpId());
 
         System.out.println("---------------------------");
 
-        empList = f.getEmployeeList();
+        empList = bean1.getEmployeeList();
         System.out.println("emp size: " + empList.size());
         empList.stream().forEach(System.out::println);
 
         System.out.println("---------------------------");
-    }
 
-    static Object getBean(ApplicationContext context) throws Exception {
-        return context.getBean("service");
+        bean1.test();
     }
 }

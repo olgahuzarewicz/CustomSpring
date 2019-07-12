@@ -1,4 +1,4 @@
-import service.TransactionCallback;
+package configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -6,9 +6,7 @@ import javax.persistence.Persistence;
 
 public class TransactionTemplate {
 
-
     public static <T> T runInTransaction(TransactionCallback transactionCallback) {
-
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("customspring");
         EntityManager em = emf.createEntityManager();
         T emp = null;

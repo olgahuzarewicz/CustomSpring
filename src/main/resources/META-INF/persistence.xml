@@ -4,7 +4,7 @@
              version="2.0">
     <persistence-unit name="customspring">
         <description>CustomSpring</description>
-        <class>employee.Employee</class>
+        <class>employee.entity.Employee</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

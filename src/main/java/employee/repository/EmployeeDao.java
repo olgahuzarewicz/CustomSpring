@@ -1,10 +1,10 @@
-import employee.Employee;
+package employee.repository;
+
+import employee.entity.Employee;
 
 import java.util.List;
 
-public interface EmployeesDaoInterface {
-
-    void originalMethod(String s);
+public interface EmployeeDao {
 
     List<Employee> getEmployeeList();
 
@@ -13,4 +13,6 @@ public interface EmployeesDaoInterface {
     void insertEmployee(Employee emp);
 
     void deleteEmployee(Long empId);
+
+    void test();
 }

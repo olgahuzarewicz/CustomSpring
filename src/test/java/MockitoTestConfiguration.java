@@ -1,19 +1,19 @@
 import annotation.Bean;
-import dao.CompanyDAO;
-import dao.CompanyDAOImpl;
+import companyDao.CompanyDao;
+import companyDao.CompanyDaoImpl;
 import org.mockito.Mockito;
-import service.Service;
-import service.ServiceImpl;
+import serviceDao.ServiceDao;
+import serviceDao.ServiceDaoImpl;
 
 public class MockitoTestConfiguration {
 
     @Bean(name = "testService")
-    public Service testService() {
-        return Mockito.mock(ServiceImpl.class);
+    public ServiceDao testService() {
+        return Mockito.mock(ServiceDaoImpl.class);
     }
 
     @Bean(name = "testCompanyDAO")
-    public CompanyDAO testCompanyDAO() {
-        return Mockito.mock(CompanyDAOImpl.class);
+    public CompanyDao testCompanyDAO() {
+        return Mockito.mock(CompanyDaoImpl.class);
     }
 }

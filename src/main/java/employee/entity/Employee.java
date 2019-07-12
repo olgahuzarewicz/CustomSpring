@@ -1,4 +1,4 @@
-package employee;
+package employee.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;

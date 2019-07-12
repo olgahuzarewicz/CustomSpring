@@ -1,3 +1,5 @@
+package configuration;
+
 import javax.persistence.EntityManager;
 
 public class ThreadLocalEntityManager {
