@@ -10,8 +10,6 @@ public class Main {
 
     public static void main(String[] args) throws Throwable {
         ApplicationContext context = new ApplicationContext(Configuration.class);
-//        CompanyDao2 bean = context.getBean("companyDao2");
-//        bean.test();
 
         EmployeeDao bean1 = context.getBean("employeesDao");
 
